@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تماس با ما - وبسایت املاک</title>
+    <link rel="stylesheet" href="contact.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
+    <script>
+        function initMap() {
+            var myLatLng = {lat: 35.6892, lng: 51.3890};
+
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 15,
+                center: myLatLng
+            });
+
+            var marker = new google.maps.Marker({
+                position: myLatLng,
+                map: map,
+                title: 'موقعیت ما'
+            });
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>تماس با ما</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html">خانه</a></li>
+                    <li><a href="about.html">درباره ما</a></li>
+                    <li><a href="contact.html">تماس با ما</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section id="contact">
+        <div class="container">
+            <div class="contact-info">
+                <h2>اطلاعات تماس</h2>
+                <ul>
+                    <li><strong>آدرس:</strong> تهران، خیابان مثال، کوچه نمونه، پلاک ۱۲</li>
+                    <li><strong>تلفن:</strong> ۰۲۱-۲۲۲۲۲۲۲</li>
+                    <li><strong>موبایل:</strong> ۰۹۱۲-۳۳۳۳۳۳۳</li>
+                    <li><strong>ایمیل:</strong> info@example.com</li>
+                </ul>
+            </div>
+            <div id="map"></div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>تمامی حقوق این وبسایت محفوظ است. &copy; 2024</p>
+        </div>
+    </footer>
+</body>
+</html>
+
+

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دفتر مدیریت املاک</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Vazir';
+            src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css');
+        }
+        body { font-family: 'Vazir', sans-serif; direction: rtl; background-color: #f4f4f4; }
+        .container { margin-top: 50px; }
+        .property-card { border: 1px solid #ddd; border-radius: 5px; padding: 15px; margin-bottom: 10px; background-color: #fff; }
+        .property-card h3 { margin-top: 0; }
+        .property-card p { margin: 5px 0; }
+        .btn-delete { color: #fff; background-color: #dc3545; border-color: #dc3545; }
+        .btn-edit { color: #fff; background-color: #007bff; border-color: #007bff; }
+        .search-box { background-color: #007bff; padding: 15px; border-radius: 5px; }
+        .search-box form { margin-bottom: 0; }
+        .search-box label { color: #fff; }
+        .search-box input[type="text"], .search-box input[type="number"] { direction: ltr; text-align: right; }
+        .search-box select { direction: rtl; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">دفتر مدیریت املاک</h1>
+        <div class="text-center mb-4">
+            <button class="btn btn-success" onclick="window.location.href='add.html'">افزودن ملک</button>
+        </div>
+        <div id="searchContainer" class="mb-4">
+            <div class="search-box">
+                <form id="searchForm">
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label for="minPrice">حداقل قیمت (ریال):</label>
+                            <input type="number" id="minPrice" class="form-control">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="maxPrice">حداکثر قیمت (ریال):</label>
+                            <input type="number" id="maxPrice" class="form-control">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="minArea">حداقل مساحت (متر مربع):</label>
+                            <input type="number" id="minArea" class="form-control">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="maxArea">حداکثر مساحت (متر مربع):</label>
+                            <input type="number" id="maxArea" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label for="propertyType">نوع ملک:</label>
+                            <select id="propertyType" class="form-control">
+                                <option value="">همه</option>
+                                <option value="مسکونی">مسکونی</option>
+                                <option value="تجاری">تجاری</option>
+                                <option value="اداری">اداری</option>
+                                <option value="زمین">زمین</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="transactionType">نوع معامله:</label>
+                            <select id="transactionType" class="form-control">
+                                <option value="">همه</option>
+                                <option value="رهن و اجاره">رهن و اجاره</option>
+                                <option value="فروش">فروش</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <button type="submit" class="btn btn-primary btn-block mt-4">جستجو</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="propertiesContainer"></div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const propertiesContainer = document.getElementById('propertiesContainer');
+            const searchForm = document.getElementById('searchForm');
+            const minPriceInput = document.getElementById('minPrice');
+            const maxPriceInput = document.getElementById('maxPrice');
+            const minAreaInput = document.getElementById('minArea');
+            const maxAreaInput = document.getElementById('maxArea');
+            const propertyTypeInput = document.getElementById('propertyType');
+            const transactionTypeInput = document.getElementById('transactionType');
+            let properties = JSON.parse(localStorage.getItem('properties')) || [];
+
+            const renderProperties = (properties) => {
+                propertiesContainer.innerHTML = '';
+                properties.forEach(property => {
+                    const propertyCard = document.createElement('div');
+                    propertyCard.className = 'property-card';
+
+                    let propertyHTML = `<h3>${property.ownerName}</h3>`;
+                    propertyHTML += `<p><strong>شماره مالک:</strong> ${property.ownerNumber}</p>`;
+                    propertyHTML += `<p><strong>آدرس خانه مالک:</strong> ${property.ownerAddress}</p>`;
+                    propertyHTML += `<p><strong>نوع ملک:</strong> ${property.propertyType}</p>`;
+                    propertyHTML += `<p><strong>نوع معامله:</strong> ${property.transactionType}</p>`;
+                    propertyHTML += `<p><strong>مساحت:</strong> ${property.area} متر مربع</p>`;
+                    if (property.subArea) propertyHTML += `<p><strong>مساحت زیر بنا:</strong> ${property.subArea} متر مربع</p>`;
+                    if (property.floors) propertyHTML += `<p><strong>تعداد طبقات:</strong> ${property.floors}</p>`;
+                    if (property.rooms) propertyHTML += `<p><strong>تعداد اتاق‌ها:</strong> ${property.rooms}</p>`;
+                    if (property.price) propertyHTML += `<p><strong>قیمت:</strong> ${property.price} ریال</p>`;
+                    if (property.description) propertyHTML += `<p><strong>توضیحات:</strong> ${property.description}</p>`;
+
+                    if (property.images && property.images.length > 0) {
+                        propertyHTML += '<div><strong>تصاویر:</strong><br>';
+                        property.images.forEach(image => {
+                            propertyHTML += `<img src="${image}" alt="Image" style="width:100px;height:100px;margin:5px;">`;
+                        });
+                        propertyHTML += '</div>';
+                    }
+
+                    if (property.videos && property.videos.length > 0) {
+                        propertyHTML += '<div><strong>فیلم‌ها:</strong><br>';
+                        property.videos.forEach(video => {
+                            propertyHTML += `<video width="200" controls style="margin:5px;"><source src="${video}" type="video/mp4">Your browser does not support HTML video.</video>`;
+                        });
+                        propertyHTML += '</div>';
+                    }
+
+                    propertyHTML += `
+                        <button class="btn btn-edit" onclick="window.location.href='edit.html?id=${property.id}'">ویرایش</button>
+                        <button class="btn btn-delete" onclick="deleteProperty('${property.id}')">حذف</button>
+                    `;
+
+                    propertyCard.innerHTML = propertyHTML;
+                    propertiesContainer.appendChild(propertyCard);
+                });
+            };
+
+            const deleteProperty = (id) => {
+                properties = properties.filter(property => property.id !== id);
+                localStorage.setItem('properties', JSON.stringify(properties));
+                renderProperties(properties);
+            };
+
+            searchForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const minPrice = minPriceInput.value ? parseInt(minPriceInput.value) : -Infinity;
+                const maxPrice = maxPriceInput.value ? parseInt(maxPriceInput.value) : Infinity;
+                const minArea = minAreaInput.value ? parseInt(minAreaInput.value) : -Infinity;
+                const maxArea = maxAreaInput.value ? parseInt(maxAreaInput.value) : Infinity;
+                const propertyTypeQuery = propertyTypeInput.value;
+                const transactionTypeQuery = transactionTypeInput.value;
+
+                const filteredProperties = properties.filter(property => {
+                    const priceCondition = property.price >= minPrice && property.price <= maxPrice;
+                    const areaCondition = property.area >= minArea && property.area <= maxArea;
+                    const propertyTypeCondition = propertyTypeQuery ? property.propertyType === propertyTypeQuery : true;
+                    const transactionTypeCondition = transactionTypeQuery ? property.transactionType === transactionTypeQuery : true;
+                    return priceCondition && areaCondition && propertyTypeCondition && transactionTypeCondition;
+                });
+
+                renderProperties(filteredProperties);
+            });
+
+            renderProperties(properties);
+        });
+
+        function deleteProperty(id) {
+            let properties = JSON.parse(localStorage.getItem('properties')) || [];
+            properties = properties.filter(property => property.id !== id);
+            localStorage.setItem('properties', JSON.stringify(properties));
+            location.reload(); // Reload the page to reflect the updated list
+        }
+    </script>
+</body>
+</html>

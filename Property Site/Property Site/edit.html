@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ویرایش ملک</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Vazir';
+            src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css');
+        }
+        body {
+            font-family: 'Vazir', sans-serif;
+            direction: rtl;
+            background-color: #f4f4f4;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .form-group label {
+            float: right;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .form-box {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-box h1 {
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+        .form-box button {
+            width: 100%;
+        }
+        .form-box .form-group label {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-box">
+            <h1 class="text-center mb-4">ویرایش ملک</h1>
+            <form id="editPropertyForm">
+                <div class="form-group">
+                    <label for="ownerName">نام مالک:</label>
+                    <input type="text" id="ownerName" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="ownerNumber">شماره مالک:</label>
+                    <input type="text" id="ownerNumber" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="ownerAddress">آدرس خانه مالک:</label>
+                    <input type="text" id="ownerAddress" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="propertyType">نوع ملک:</label>
+                    <select id="propertyType" class="form-control">
+                        <option value="مسکونی">مسکونی</option>
+                        <option value="تجاری">تجاری</option>
+                        <option value="اداری">اداری</option>
+                        <option value="زمین">زمین</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transactionType">نوع معامله:</label>
+                    <select id="transactionType" class="form-control">
+                        <option value="رهن و اجاره">رهن و اجاره</option>
+                        <option value="فروش">فروش</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="area">مساحت (متر مربع):</label>
+                    <input type="number" id="area" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="subArea">مساحت زیر بنا (اختیاری):</label>
+                    <input type="number" id="subArea" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="floors">تعداد طبقات (اختیاری):</label>
+                    <input type="number" id="floors" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="rooms">تعداد اتاق‌ها (اختیاری):</label>
+                    <input type="number" id="rooms" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="price">قیمت (ریال):</label>
+                    <input type="number" id="price" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="description">توضیحات (اختیاری):</label>
+                    <textarea id="description" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="images">تصاویر (اختیاری):</label>
+                    <input type="file" id="images" class="form-control" multiple>
+                </div>
+                <div class="form-group">
+                    <label for="videos">فیلم‌ها (اختیاری):</label>
+                    <input type="file" id="videos" class="form-control" multiple>
+                </div>
+                <button type="submit" class="btn btn-primary mb-2">ذخیره تغییرات</button>
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='index.html'">لغو</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const editPropertyForm = document.getElementById('editPropertyForm');
+            const propertyId = new URLSearchParams(window.location.search).get('id');
+            const properties = JSON.parse(localStorage.getItem('properties')) || [];
+            const property = properties.find(prop => prop.id === propertyId);
+
+            if (!property) {
+                alert('ملک مورد نظر یافت نشد.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            document.getElementById('ownerName').value = property.ownerName;
+            document.getElementById('ownerNumber').value = property.ownerNumber;
+            document.getElementById('ownerAddress').value = property.ownerAddress;
+            document.getElementById('propertyType').value = property.propertyType;
+            document.getElementById('transactionType').value = property.transactionType;
+            document.getElementById('area').value = property.area;
+            document.getElementById('subArea').value = property.subArea || '';
+            document.getElementById('floors').value = property.floors || '';
+            document.getElementById('rooms').value = property.rooms || '';
+            document.getElementById('price').value = property.price;
+            document.getElementById('description').value = property.description;
+
+            const convertFileToBase64 = (file) => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                });
+            };
+
+            editPropertyForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                property.ownerName = document.getElementById('ownerName').value.trim();
+                property.ownerNumber = document.getElementById('ownerNumber').value.trim();
+                property.ownerAddress = document.getElementById('ownerAddress').value.trim();
+                property.propertyType = document.getElementById('propertyType').value;
+                property.transactionType = document.getElementById('transactionType').value;
+                property.area = parseInt(document.getElementById('area').value.trim());
+                property.subArea = parseInt(document.getElementById('subArea').value.trim()) || null;
+                property.floors = parseInt(document.getElementById('floors').value.trim()) || null;
+                property.rooms = parseInt(document.getElementById('rooms').value.trim()) || null;
+                property.price = parseInt(document.getElementById('price').value.trim());
+                property.description = document.getElementById('description').value.trim();
+
+                const newImages = [];
+                const imageFiles = document.getElementById('images').files;
+                for (let i = 0; i < imageFiles.length; i++) {
+                    const base64Image = await convertFileToBase64(imageFiles[i]);
+                    newImages.push(base64Image);
+                }
+
+                if (newImages.length) {
+                    property.images = newImages;
+                }
+
+                const newVideos = [];
+                const videoFiles = document.getElementById('videos').files;
+                for (let i = 0; i < videoFiles.length; i++) {
+                    const base64Video = await convertFileToBase64(videoFiles[i]);
+                    newVideos.push(base64Video);
+                }
+
+                if (newVideos.length) {
+                    property.videos = newVideos;
+                }
+
+                const updatedProperties = properties.map(prop => prop.id === propertyId ? property : prop);
+                localStorage.setItem('properties', JSON.stringify(updatedProperties));
+
+                alert('تغییرات با موفقیت ذخیره شد.');
+                window.location.href = 'melk.html';
+            });
+        });
+    </script>
+</body>
+</html>

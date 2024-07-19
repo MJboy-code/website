@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ثبت نام در سایت</title>
+    <!-- استفاده از Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Vazir';
+            src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css');
+        }
+        body { font-family: 'Vazir', sans-serif; direction: rtl; background-color: #f8f9fa; }
+        .container { max-width: 400px; margin-top: 50px; }
+        .btn-primary { background-color: #007bff; border-color: #007bff; }
+        .btn-primary:hover { background-color: #0069d9; border-color: #0062cc; }
+        .form-control { font-size: 16px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center mb-4">ثبت نام در سایت</h2>
+        <form id="signupForm">
+            <div class="form-group">
+                <label for="fullname">نام و نام خانوادگی:</label>
+                <input type="text" id="fullname" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="username">نام کاربری:</label>
+                <input type="text" id="username" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="email">ایمیل:</label>
+                <input type="email" id="email" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">شماره تلفن:</label>
+                <input type="tel" id="phone" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="password">رمز عبور:</label>
+                <input type="password" id="password" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">تکرار رمز عبور:</label>
+                <input type="password" id="confirmPassword" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">ثبت نام</button>
+        </form>
+    </div>
+
+    <!-- استفاده از Bootstrap JS و jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const fullname = document.getElementById('fullname').value;
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // بررسی تطابق رمز عبور
+            if (password !== confirmPassword) {
+                alert('رمز عبور و تکرار آن باید یکسان باشند.');
+                return;
+            }
+
+            // ذخیره اطلاعات کاربر در localStorage
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            if (users.find(user => user.username === username)) {
+                alert('این نام کاربری قبلاً ثبت شده است.');
+                return;
+            }
+
+            users.push({ fullname, username, email, phone, password });
+            localStorage.setItem('users', JSON.stringify(users));
+
+            alert('ثبت نام با موفقیت انجام شد.');
+            window.location.href = 'login.html'; // به صفحه ورود هدایت کنید
+        });
+    </script>
+</body>
+</html>
+
+
+
